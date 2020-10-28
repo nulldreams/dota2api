@@ -18,17 +18,17 @@ export class Dota2 {
     })
   }
 
-  public async findHeroe(heroe: string) {
+  public async findHero(hero: string) {
     const { data } = await this.heroesInfo.get('/jsfeed/heropickerdata')
 
     const heroes = data
-    const heroeInfo = heroes[heroe]
+    const heroInfo = heroes[hero]
 
-    if (!heroeInfo) throw new RequestError('heroe not found')
+    if (!heroInfo) throw new RequestError('heroe not found')
 
-    const heroeImage = await this.findHeroeImage(heroe)
+    const heroImage = await this.findHeroeImage(hero)
 
-    return { ...heroeInfo, ...heroeImage }
+    return { ...heroInfo, ...heroImage }
   }
 
   public async listHeroes(): Promise<IDota2Heroe[]> {
@@ -50,19 +50,19 @@ export class Dota2 {
 
   private async fillHeroesWithImages(heroes: IDota2Heroe[]) {
     const heroesImages = await this.getHeroesImages()
-    const filledImageHeroes = Object.keys(heroes).map((heroe) => {
-      const heroeImage = heroesImages.find((hImg) => hImg[heroe])
-      return { ...heroes[heroe], ...heroeImage[heroe] }
+    const filledImageHeroes = Object.keys(heroes).map((hero) => {
+      const heroImage = heroesImages.find((hImg) => hImg[hero])
+      return { ...heroes[hero], ...heroImage[hero] }
     })
 
     return filledImageHeroes
   }
 
-  private async findHeroeImage(heroe: string) {
+  private async findHeroeImage(hero: string) {
     if (!this.heroesImages) this.heroesImages = await this.getHeroesImages()
 
-    const heroeImage = this.heroesImages.find((heroeImage) => heroeImage[heroe])
+    const heroImage = this.heroesImages.find((heroImage) => heroImage[hero])
 
-    return heroeImage[heroe]
+    return heroImage[hero]
   }
 }
