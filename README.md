@@ -1,4 +1,6 @@
-<h1 align="center">Welcome to Dota2 - Scrap API 👋</h1>
+<p align="center">
+    <img src="./logo.png" width="50%">
+</p>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
