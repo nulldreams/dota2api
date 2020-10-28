@@ -1,10 +1,12 @@
 import axios, { AxiosInstance } from 'axios'
-import { IDota2Heroe, IDota2HeroeImage, IDota2HeroeImageInfo } from './interfaces/dota2.interface'
+import { RequestError } from './error'
+import { IDota2Heroe, IDota2HeroeImage } from './interfaces/dota2.interface'
 import { Scrap } from './scrap'
 
 export class Dota2 {
   private DOTA_URL = 'http://www.dota2.com'
   private heroesInfo: AxiosInstance
+  private heroesImages: IDota2HeroeImage[]
   public heroesList: IDota2Heroe[]
 
   constructor() {
@@ -14,6 +16,19 @@ export class Dota2 {
         l: 'portuguese',
       },
     })
+  }
+
+  public async findHeroe(heroe: string) {
+    const { data } = await this.heroesInfo.get('/jsfeed/heropickerdata')
+
+    const heroes = data
+    const heroeInfo = heroes[heroe]
+
+    if (!heroeInfo) throw new RequestError('heroe not found')
+
+    const heroeImage = await this.findHeroeImage(heroe)
+
+    return { ...heroeInfo, ...heroeImage }
   }
 
   public async listHeroes(): Promise<IDota2Heroe[]> {
@@ -41,5 +56,13 @@ export class Dota2 {
     })
 
     return filledImageHeroes
+  }
+
+  private async findHeroeImage(heroe: string) {
+    if (!this.heroesImages) this.heroesImages = await this.getHeroesImages()
+
+    const heroeImage = this.heroesImages.find((heroeImage) => heroeImage[heroe])
+
+    return heroeImage[heroe]
   }
 }

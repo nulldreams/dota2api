@@ -1,5 +1,6 @@
 export interface IDota2Heroe {
   avatar?: string
+  slug?: string
   info_url?: string
   name: string
   bio: string

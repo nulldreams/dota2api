@@ -19,6 +19,7 @@ export class Scrap {
         const heroeId = $(this).attr('id').replace(/link_/g, '')
         heroes.push({
           [heroeId]: {
+            slug: heroeId,
             avatar: $(this).find('img').first().attr('src'),
             info_url: $(this).attr('href'),
           },
