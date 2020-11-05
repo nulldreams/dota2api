@@ -42,7 +42,7 @@
 ]
 ```
 
-> https://dota2api.vercel.app/api/heroes?heroe=axe
+> https://dota2api.vercel.app/api/heroes?hero=axe
 ```json
 {
     "name": "Axe",

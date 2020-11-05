@@ -13,15 +13,23 @@ export class Scrap {
     const $ = cheerio.load(this.html)
     const heroes = []
 
+    const mainAttributeClasses = {
+      heroColLeft: 'strength',
+      heroColMiddle: 'agility',
+      heroColRight: 'intelligence',
+    }
+
     $('.heroIcons')
       .find('a')
       .each(function () {
-        const heroeId = $(this).attr('id').replace(/link_/g, '')
+        const heroId = $(this).attr('id').replace(/link_/g, '')
+        const heroMainAttribute = mainAttributeClasses[$(this).parent().parent().attr('class')]
         heroes.push({
-          [heroeId]: {
-            slug: heroeId,
+          [heroId]: {
+            slug: heroId,
             avatar: $(this).find('img').first().attr('src'),
             info_url: $(this).attr('href'),
+            mainAttribute: heroMainAttribute,
           },
         })
       })

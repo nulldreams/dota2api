@@ -24,9 +24,9 @@ export class Dota2 {
     const heroes = data
     const heroInfo = heroes[hero]
 
-    if (!heroInfo) throw new RequestError('heroe not found')
+    if (!heroInfo) throw new RequestError('hero not found')
 
-    const heroImage = await this.findHeroeImage(hero)
+    const heroImage = await this.findHeroImage(hero)
 
     return { ...heroInfo, ...heroImage }
   }
@@ -58,7 +58,7 @@ export class Dota2 {
     return filledImageHeroes
   }
 
-  private async findHeroeImage(hero: string) {
+  private async findHeroImage(hero: string) {
     if (!this.heroesImages) this.heroesImages = await this.getHeroesImages()
 
     const heroImage = this.heroesImages.find((heroImage) => heroImage[hero])
