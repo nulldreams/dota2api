@@ -17,3 +17,20 @@ export interface IDota2HeroImageInfo {
 }
 
 export type IDota2HeroImage = Record<string, IDota2HeroImageInfo>
+
+export interface IDota2Item {
+  slug: string
+  id: number
+  img: string
+  dname: string
+  qual: string
+  cost: number
+  desc: string
+  notes: string
+  attrib: string
+  mc: string
+  cd: number
+  lore: string
+  components: null
+  created: boolean
+}
