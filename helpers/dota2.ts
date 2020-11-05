@@ -36,7 +36,15 @@ export class Dota2 {
     const heroes = await this.info.get('/jsfeed/heropickerdata')
     const heroesList = await this.fillHeroesWithImages(heroes.data)
 
-    this.heroesList = heroesList
+    this.heroesList = heroesList.sort((a, b) => {
+      if (a.name < b.name) {
+        return -1
+      }
+      if (a.name > b.name) {
+        return 1
+      }
+      return 0
+    })
 
     return this.heroesList
   }
