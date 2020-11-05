@@ -1,5 +1,5 @@
 import cheerio from 'cheerio'
-import { IDota2HeroeImage } from './interfaces/dota2.interface'
+import { IDota2HeroImage } from './interfaces/dota2.interface'
 
 export class Scrap {
   private html: string
@@ -9,7 +9,7 @@ export class Scrap {
     this.html = html
   }
 
-  public scrapHeroes(): IDota2HeroeImage[] {
+  public scrapHeroes(): IDota2HeroImage[] {
     const $ = cheerio.load(this.html)
     const heroes = []
 
@@ -29,7 +29,7 @@ export class Scrap {
             slug: heroId,
             avatar: $(this).find('img').first().attr('src'),
             info_url: $(this).attr('href'),
-            mainAttribute: heroMainAttribute,
+            main_attribute: heroMainAttribute,
           },
         })
       })

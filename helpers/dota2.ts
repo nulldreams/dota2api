@@ -1,13 +1,13 @@
 import axios, { AxiosInstance } from 'axios'
 import { RequestError } from './error'
-import { IDota2Heroe, IDota2HeroeImage } from './interfaces/dota2.interface'
+import { IDota2Hero, IDota2HeroImage } from './interfaces/dota2.interface'
 import { Scrap } from './scrap'
 
 export class Dota2 {
   private DOTA_URL = 'http://www.dota2.com'
   private heroesInfo: AxiosInstance
-  private heroesImages: IDota2HeroeImage[]
-  public heroesList: IDota2Heroe[]
+  private heroesImages: IDota2HeroImage[]
+  public heroesList: IDota2Hero[]
 
   constructor() {
     this.heroesInfo = axios.create({
@@ -31,7 +31,7 @@ export class Dota2 {
     return { ...heroInfo, ...heroImage }
   }
 
-  public async listHeroes(): Promise<IDota2Heroe[]> {
+  public async listHeroes(): Promise<IDota2Hero[]> {
     const heroes = await this.heroesInfo.get('/jsfeed/heropickerdata')
     const heroesList = await this.fillHeroesWithImages(heroes.data)
 
@@ -40,7 +40,7 @@ export class Dota2 {
     return this.heroesList
   }
 
-  private async getHeroesImages(): Promise<IDota2HeroeImage[]> {
+  private async getHeroesImages(): Promise<IDota2HeroImage[]> {
     const { data } = await this.heroesInfo.get('/heroes')
 
     const heroesImages = new Scrap(data).scrapHeroes()
@@ -48,7 +48,7 @@ export class Dota2 {
     return heroesImages
   }
 
-  private async fillHeroesWithImages(heroes: IDota2Heroe[]) {
+  private async fillHeroesWithImages(heroes: IDota2Hero[]) {
     const heroesImages = await this.getHeroesImages()
     const filledImageHeroes = Object.keys(heroes).map((hero) => {
       const heroImage = heroesImages.find((hImg) => hImg[hero])
