@@ -5,6 +5,7 @@ import { Scrap } from './scrap'
 
 export class Dota2 {
   private DOTA_URL = 'http://www.dota2.com'
+  private DOTA_ITEM_IMG_URL = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/items'
   private info: AxiosInstance
   private heroesImages: IDota2HeroImage[]
   public heroesList: IDota2Hero[]
@@ -75,6 +76,10 @@ export class Dota2 {
     return heroImage[hero]
   }
 
+  private itemImageLinkProvider(link: string) {
+    return `${this.DOTA_ITEM_IMG_URL}/${link.slice(0, -2)}`
+  }
+
   public async listItems(): Promise<IDota2Item[]> {
     const { data } = await this.info.get('/jsfeed/itemdata')
 
@@ -82,6 +87,7 @@ export class Dota2 {
     const items = Object.keys(itemsData).map((itemKey) => ({
       slug: itemKey,
       ...itemsData[itemKey],
+      img: this.itemImageLinkProvider(itemsData[itemKey].img),
     }))
 
     this.itemsList = items
@@ -97,6 +103,6 @@ export class Dota2 {
 
     if (!itemData) throw new RequestError('item not found')
 
-    return { slug: item, ...itemData }
+    return { slug: item, ...itemData, img: this.itemImageLinkProvider(itemData.img) }
   }
 }
