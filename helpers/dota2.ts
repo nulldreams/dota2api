@@ -1,16 +1,18 @@
 import axios, { AxiosInstance } from 'axios'
 import { RequestError } from './error'
-import { IDota2Heroe, IDota2HeroeImage } from './interfaces/dota2.interface'
+import { IDota2Hero, IDota2HeroImage, IDota2Item } from './interfaces/dota2.interface'
 import { Scrap } from './scrap'
 
 export class Dota2 {
   private DOTA_URL = 'http://www.dota2.com'
-  private heroesInfo: AxiosInstance
-  private heroesImages: IDota2HeroeImage[]
-  public heroesList: IDota2Heroe[]
+  private DOTA_ITEM_IMG_URL = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/items'
+  private info: AxiosInstance
+  private heroesImages: IDota2HeroImage[]
+  public heroesList: IDota2Hero[]
+  public itemsList: IDota2Item[]
 
   constructor() {
-    this.heroesInfo = axios.create({
+    this.info = axios.create({
       baseURL: this.DOTA_URL,
       params: {
         l: 'portuguese',
@@ -19,36 +21,44 @@ export class Dota2 {
   }
 
   public async findHero(hero: string) {
-    const { data } = await this.heroesInfo.get('/jsfeed/heropickerdata')
+    const { data } = await this.info.get('/jsfeed/heropickerdata')
 
     const heroes = data
     const heroInfo = heroes[hero]
 
-    if (!heroInfo) throw new RequestError('heroe not found')
+    if (!heroInfo) throw new RequestError('hero not found')
 
-    const heroImage = await this.findHeroeImage(hero)
+    const heroImage = await this.findHeroImage(hero)
 
     return { ...heroInfo, ...heroImage }
   }
 
-  public async listHeroes(): Promise<IDota2Heroe[]> {
-    const heroes = await this.heroesInfo.get('/jsfeed/heropickerdata')
+  public async listHeroes(): Promise<IDota2Hero[]> {
+    const heroes = await this.info.get('/jsfeed/heropickerdata')
     const heroesList = await this.fillHeroesWithImages(heroes.data)
 
-    this.heroesList = heroesList
+    this.heroesList = heroesList.sort((a, b) => {
+      if (a.name < b.name) {
+        return -1
+      }
+      if (a.name > b.name) {
+        return 1
+      }
+      return 0
+    })
 
     return this.heroesList
   }
 
-  private async getHeroesImages(): Promise<IDota2HeroeImage[]> {
-    const { data } = await this.heroesInfo.get('/heroes')
+  private async getHeroesImages(): Promise<IDota2HeroImage[]> {
+    const { data } = await this.info.get('/heroes')
 
     const heroesImages = new Scrap(data).scrapHeroes()
 
     return heroesImages
   }
 
-  private async fillHeroesWithImages(heroes: IDota2Heroe[]) {
+  private async fillHeroesWithImages(heroes: IDota2Hero[]) {
     const heroesImages = await this.getHeroesImages()
     const filledImageHeroes = Object.keys(heroes).map((hero) => {
       const heroImage = heroesImages.find((hImg) => hImg[hero])
@@ -58,11 +68,41 @@ export class Dota2 {
     return filledImageHeroes
   }
 
-  private async findHeroeImage(hero: string) {
+  private async findHeroImage(hero: string) {
     if (!this.heroesImages) this.heroesImages = await this.getHeroesImages()
 
     const heroImage = this.heroesImages.find((heroImage) => heroImage[hero])
 
     return heroImage[hero]
+  }
+
+  private itemImageLinkProvider(link: string) {
+    return `${this.DOTA_ITEM_IMG_URL}/${link.slice(0, -2)}`
+  }
+
+  public async listItems(): Promise<IDota2Item[]> {
+    const { data } = await this.info.get('/jsfeed/itemdata')
+
+    const itemsData = data.itemdata
+    const items = Object.keys(itemsData).map((itemKey) => ({
+      slug: itemKey,
+      ...itemsData[itemKey],
+      img: this.itemImageLinkProvider(itemsData[itemKey].img),
+    }))
+
+    this.itemsList = items
+
+    return this.itemsList
+  }
+
+  public async findItem(item: string): Promise<IDota2Item> {
+    const { data } = await this.info.get('/jsfeed/itemdata')
+    const items = data.itemdata
+
+    const itemData = items[item]
+
+    if (!itemData) throw new RequestError('item not found')
+
+    return { slug: item, ...itemData, img: this.itemImageLinkProvider(itemData.img) }
   }
 }

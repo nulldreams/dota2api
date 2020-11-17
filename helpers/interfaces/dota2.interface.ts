@@ -1,4 +1,4 @@
-export interface IDota2Heroe {
+export interface IDota2Hero {
   avatar?: string
   slug?: string
   info_url?: string
@@ -10,9 +10,27 @@ export interface IDota2Heroe {
   roles_l: string[]
 }
 
-export interface IDota2HeroeImageInfo {
+export interface IDota2HeroImageInfo {
   avatar: string
   info_url: string
+  main_attribute: string
 }
 
-export type IDota2HeroeImage = Record<string, IDota2HeroeImageInfo>
+export type IDota2HeroImage = Record<string, IDota2HeroImageInfo>
+
+export interface IDota2Item {
+  slug: string
+  id: number
+  img: string
+  dname: string
+  qual: string
+  cost: number
+  desc: string
+  notes: string
+  attrib: string
+  mc: string
+  cd: number
+  lore: string
+  components: null
+  created: boolean
+}
